@@ -1,0 +1,4 @@
+[console_scripts]
+listener = py_echo.subscriber_member_function:main
+talker = py_echo.publisher_member_function:main
+

@@ -1,0 +1,9 @@
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/uninstall.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/cpp_echo_uninstall.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/test.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/edit_cache.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/rebuild_cache.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/list_install_components.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/install.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/install/local.dir
+/home/ignazio/ros2_ws/build/cpp_echo/CMakeFiles/install/strip.dir
