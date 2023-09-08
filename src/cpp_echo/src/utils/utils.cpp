@@ -1,9 +1,6 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-using std::placeholders::_1;
 
 //convert int number into alphabetic char
 char intToAlphabet( int i )
