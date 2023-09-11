@@ -1,11 +1,3 @@
-import rclpy
-from rclpy.node import Node
-import numpy as np
-from array import array
-from rclpy.executors import SingleThreadedExecutor
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from std_msgs.msg import String
-
 class Server(Node):
 	def __init__(self):
 		super().__init__('subscriber')
@@ -27,21 +19,3 @@ class Server(Node):
 		self.get_logger().info('[__TIME__]: "I publish: %s' % msg.data)
 		self.publisher_[int(msg.data[0: msg.data.find("-")])].publish(msg)
 
-
-def main(args=None):
-    rclpy.init(args=args)
-
-    subscriber = Server()
-    executor = SingleThreadedExecutor()
-    executor.add_node(subscriber)
-
-    try:
-        executor.spin()
-    except KeyboardInterrupt:
-        subscriber.get_logger().info('Keyboard interrupt, shutting down.\n')
-    subscriber.destroy_node()
-    rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()
