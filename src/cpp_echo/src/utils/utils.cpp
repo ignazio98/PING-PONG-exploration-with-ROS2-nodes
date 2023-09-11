@@ -13,7 +13,7 @@ int save_to_file(std::string filename_,
 				 std::string data_)
 {
 	//check if file exists, and if it will not, we create it
-	std::ofstream writer(filename_, std::ios::app);
+	std::ofstream writer("result/" + filename_, std::ios::app);
 
 	//check if we can write on it
 	if (!writer)

@@ -5,7 +5,7 @@ import sys
 
 def save_to_file(filename_, result_):
 	try:
-		f = open("result/py/" + filename_, "a")
+		f = open("result/" + filename_, "a")
 	except OSError:
 		return 1
 
