@@ -1,8 +1,22 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+import sys
 
-from utils import utils
+def save_to_file(filename_, result_):
+	try:
+		f = open("result/py/" + filename_, "a")
+	except OSError:
+		return 1
+
+	with f:
+		f.write(result_ + "\n")
+	
+	f.close()
+	return 0
+
+def concatenate_result(number_publisher_, publisher_max_, message_size_, time_):						
+	return "client" + str(number_publisher_) + "-" + str(publisher_max_) + "-" + str(message_size_) + "-" + str(time_);
 
 class Client(Node):
 	def __init__(self):
@@ -23,6 +37,7 @@ class Client(Node):
 		self.NUM_MESSAGES_ = 50
 		self.publisher_
 		self.subscription_
+		self.filename_ = "result" + str(self.get_parameter("publisher_max").value) + "-" + str(self.get_parameter("message_size").value) + ".txt"
 
 	def timer_callback(self):
 		if(self.count_ <= self.NUM_MESSAGES_):
@@ -32,28 +47,28 @@ class Client(Node):
 			self.start_ns_.append(self.get_clock().now().nanoseconds)
 			
 			self.publisher_.publish(msg)
-			self.get_logger().info('Publishing: "%s"' % msg.data)
 			self.count_ += 1
         
 	def topic_callback(self,msg):
-		if(len(msg.data) != (self.get_parameter('message_size') + 2)):
+		if(len(msg.data) != (int(self.get_parameter('message_size').value) + 2)):
 			return ;
 		
-		string result_ = concatenate_result(self.get_parameter('number_publisher').value,
-											self.get_parameter('publisher_max').value,
-											self.get_parameter('message_size').value,
-											int(self.get_clock().now().nanoseconds),
-											int(self.start_ns_[self.arrived_]))
+		np = int(self.get_parameter('number_publisher').value)
+		pm = int(self.get_parameter('publisher_max').value)
+		ms = int(self.get_parameter('message_size').value)
+		end_ns = int(self.get_clock().now().nanoseconds)
+		start_ns = int(self.start_ns_[self.arrived_])
 		
-		if(!save_to_file(filename_, result_))
-			return;
+		result_ = concatenate_result(np, pm, ms, end_ns - start_ns)
+		
+		if(save_to_file(self.filename_, result_) == 1):
+			return 
 		
 		self.arrived_ += 1
-		self.get_logger().info('[__TIME__]: "%d' % time)
+		self.get_logger().info('"%s"' % result_)
 		
-		if(self.arrived_ >= self.NUM_MESSAGES):
-			self.shutdown()
-			return;
+		if(self.arrived_ >= self.NUM_MESSAGES_):
+			exit()
 
 def main(args=None):
 	rclpy.init(args=args)
@@ -61,9 +76,8 @@ def main(args=None):
 	publisher = Client()
 	
 	rclpy.spin(publisher)
-	
-	publisher.destroy_node()
 	rclpy.shutdown()
+	return 
 
 
 if __name__ == '__main__':
