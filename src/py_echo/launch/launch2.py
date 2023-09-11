@@ -18,7 +18,7 @@ def generate_launch_description():
 	for i in range(0, 2):
 		ld.add_action(
 			Node(
-				package="cpp_echo",
+				package="py_echo",
 				executable="client",
 				name="Node" + str(i),
 				parameters=[
