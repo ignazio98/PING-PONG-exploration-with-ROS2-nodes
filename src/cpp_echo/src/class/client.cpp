@@ -67,7 +67,7 @@ private:
 	publisher_->publish(m);
 	count_++;
 
-	if(count_ <= NUM_MESSAGES)
+	if(count_ >= NUM_MESSAGES)
 	{
 		this->timer_->cancel();
 	}
