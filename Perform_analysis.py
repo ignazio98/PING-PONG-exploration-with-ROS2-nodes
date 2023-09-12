@@ -14,11 +14,11 @@ def average_chart(df):
         df ([dataframe]): [dataframe created from make_average_chart function]
     """
     ax1 = df.pivot("Message Size", "Scrittori").plot.bar(figsize = (12, 6))
-    plt.savefig("avg-compare-lan-local.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("result/avg-compare-lan-local.pdf", format="pdf", bbox_inches="tight")
     ax2 = df[['Scrittori', 'Message Size', 'LAN']].pivot("Message Size", "Scrittori").plot.bar(figsize = (12, 6))
-    plt.savefig("avg-lan.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("result/avg-lan.pdf", format="pdf", bbox_inches="tight")
     ax3 = df[['Scrittori', 'Message Size', 'LOCAL']].pivot("Message Size", "Scrittori").plot.bar(figsize = (12, 6))
-    plt.savefig("avg-local.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("result/avg-local.pdf", format="pdf", bbox_inches="tight")
 
 def make_average_chart(df, writer, size):
     """
@@ -61,7 +61,7 @@ def r_chart(df, scrittori, size):
     """
     basic = ['Scrittori', 'Message Size']
     column_list = []
-    for i in range(0, 4):
+    for i in range(0, scrittori):
         column_list.append('client' + str(i))
 
     R = copy.deepcopy(df[(df['Scrittori'] == scrittori) & (df['Message Size'] == size)][basic + column_list])
@@ -100,18 +100,18 @@ def make_r_chart_by_writer(df, writer, size, columns, provenance):
             axis[j//columns,j%columns].plot(data['Xbar'], marker=symbol[i], label = 'Writer' + str(writer[i]))
             median = min(median, data['Rbar'][0])
 
-    axis[j//columns,j%columns].plot(data['UCL'], color='b', label = 'UCL')
-    axis[j//columns,j%columns].plot(data['LCL'], color='k', label = 'LCL')
-    axis[j//columns,j%columns].plot(median, color='r', label = 'Median')
+        axis[j//columns,j%columns].plot(data['UCL'], color='b', label = 'UCL')
+        axis[j//columns,j%columns].plot(data['LCL'], color='k', label = 'LCL')
+        axis[j//columns,j%columns].plot(median, color='r', label = 'Median')
 
-    axis[j//columns,j%columns].legend()
-    axis[j//columns,j%columns].grid()
-    axis[j//columns,j%columns].set_title('Writer_' + str(size[j]))
+        axis[j//columns,j%columns].legend()
+        axis[j//columns,j%columns].grid()
+        axis[j//columns,j%columns].set_title('Size_' + str(size[i]))
 
     for ax in axis.flat:
         ax.set(xlabel='Request', ylabel='Time ms')
 
-    plt.savefig("result-" + str(writer[i]) + "-" + provenance + "-writer.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("/result/result-" + str(writer[i]) + "-" + provenance + "-writer.pdf", format="pdf", bbox_inches="tight")
 
 def make_r_chart_by_size(df, writer, size, columns, provenance):
     """
@@ -138,20 +138,20 @@ def make_r_chart_by_size(df, writer, size, columns, provenance):
             axis[j//columns,j%columns].plot(data['Xbar'], marker=symbol[i], label = 'Writer' + str(writer[j]))
             median = min(median, data['Rbar'][0])
 
-    axis[j//columns,j%columns].plot(data['UCL'], color='b', label = 'UCL')
-    axis[j//columns,j%columns].plot(data['LCL'], color='k', label = 'LCL')
-    axis[j//columns,j%columns].plot(median, color='r', label = 'Median')
+        axis[j//columns,j%columns].plot(data['UCL'], color='b', label = 'UCL')
+        axis[j//columns,j%columns].plot(data['LCL'], color='k', label = 'LCL')
+        axis[j//columns,j%columns].plot(median, color='r', label = 'Median')
 
-    axis[j//columns,j%columns].legend()
-    axis[j//columns,j%columns].grid()
-    axis[j//columns,j%columns].set_title('Writer_' + str(size[j]))
+        axis[j//columns,j%columns].legend()
+        axis[j//columns,j%columns].grid()
+        axis[j//columns,j%columns].set_title('Writer' + str(writer[j]))
 
     for ax in axis.flat:
         ax.set(xlabel='Request', ylabel='Time ms')
 
-    plt.savefig("result-" + str(writer[i]) + "-" + provenance + "-message_size.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("/result/result-" + str(writer[i]) + "-" + provenance + "-message_size.pdf", format="pdf", bbox_inches="tight")
 
-def table_creation(df, writer, size, source):
+def table_creation(df, writer, size, source, n_element):
     """
     Create a dataframe with a dynamic number of column, due to value of scrittori_unique 
 
@@ -169,15 +169,15 @@ def table_creation(df, writer, size, source):
             data = df[(df['Scrittori'] == i) & (df['Message Size'] == j)]
             tmp = pd.DataFrame()
 
-            tmp['Scrittori'] = [i for x in range(0, size)]
-            tmp['Message Size'] = [j for x in range(0, size)]
+            tmp['Scrittori'] = [i for x in range(0, n_element)]
+            tmp['Message Size'] = [j for x in range(0, n_element)]
 
             for k in range(0, i):
                 t = data[data['Source'] == source[k]]
 
                 refill = []
-                if len(t['Time']) < size:
-                    refill = [t['Time'].iloc[1]] * (size - len(t['Time']))
+                if len(t['Time']) < n_element:
+                    refill = [t['Time'].iloc[1]] * (n_element - len(t['Time']))
 
                 tmp['client' + str(k)] = np.concatenate((np.array(t['Time']), refill))
 
@@ -188,42 +188,42 @@ def main():
     """
         args 
             1 : LAN/LOCAL
-            2 : AVG/R/BOTH
     """    
 
-    if(len(sys.argv) != 3):
+    if(len(sys.argv) != 2):
         print("Error, number of parameter isn't correct")
         return 1
     
     #save parameter
     provenance = sys.argv[1]
-    type = sys.argv[2]
 
     #open dataset
-    df = pd.read_csv('/result/DATI.csv', sep=";", header=0)
+    df = pd.read_csv('DATI.csv', sep=";", header=0)
+    df2 = copy.deepcopy(df)
+    df = df[df['Provenance'] == provenance]
 
     #upload global variable
-    source_unique = df['Source'].unique().tolist()
-    scrittori_unique = df['Scrittori'].unique().tolist()
-    message_unique = df['Message Size'].unique().tolist()
+    source_unique = df2['Source'].unique().tolist()
+    scrittori_unique = df2['Scrittori'].unique().tolist()
+    message_unique = df2['Message Size'].unique().tolist()
 
     size = columns = 0
-    if(type == "LAN"):
+    if(provenance == "LAN"):
         size = 50
         columns = 4
     else:
         size = 100
         columns = 5
 
-    R = copy.deepcopy(table_creation(df, scrittori_unique, message_unique,  source_unique))
-    R = copy.deepcopy(r_chart(R, scrittori_unique, message_unique))
+    R = copy.deepcopy(table_creation(df, scrittori_unique, message_unique, source_unique, size))
 
-    make_r_chart_by_writer(R, scrittori_unique, message_unique, columns, type)
-    make_r_chart_by_size(R, scrittori_unique, message_unique, columns, type)
+    avg_dataframe = make_average_chart(df2, scrittori_unique, message_unique)
+    average_chart(avg_dataframe)
 
+    R = copy.deepcopy(table_creation(df, scrittori_unique, message_unique, source_unique, size))
 
-    avg_dataframe = make_average_chart(R, scrittori_unique, message_unique)
-    make_average_chart(avg_dataframe)
+    make_r_chart_by_writer(R, scrittori_unique, message_unique, columns, provenance)
+    make_r_chart_by_size(R, scrittori_unique, message_unique, 2, provenance)
 
     return 
 
