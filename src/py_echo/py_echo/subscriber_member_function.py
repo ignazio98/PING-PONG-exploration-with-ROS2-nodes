@@ -1,8 +1,8 @@
 import rclpy
-from rclpy.node import Node
-import numpy as np
-from array import array
 from rclpy.executors import SingleThreadedExecutor
+<<<<<<< HEAD
+from class_object.server import Server as s
+=======
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from std_msgs.msg import String
 
@@ -27,11 +27,12 @@ class Server(Node):
 		self.get_logger().info('[__TIME__]: "I publish: %s' % msg.data)
 		self.publisher_[int(msg.data[0: msg.data.find("-")])].publish(msg)
 
+>>>>>>> origin/main
 
 def main(args=None):
     rclpy.init(args=args)
 
-    subscriber = Server()
+    subscriber = s.Server()
     executor = SingleThreadedExecutor()
     executor.add_node(subscriber)
 

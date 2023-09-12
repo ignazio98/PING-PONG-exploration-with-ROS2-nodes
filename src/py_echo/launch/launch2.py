@@ -18,8 +18,8 @@ def generate_launch_description():
 	for i in range(0, 2):
 		ld.add_action(
 			Node(
-				package="cpp_echo",
-				executable="client",
+				package="py_echo",
+				executable="talker",
 				name="Node" + str(i),
 				parameters=[
 					{"message_size" : message_size_},
