@@ -4,10 +4,6 @@ using std::placeholders::_1;
 
 #include "utils/utils.cpp"
 #include "class/server.cpp"
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 
 int main(int argc, char * argv[])
 {

@@ -10,10 +10,6 @@ using namespace std::chrono_literals;
 
 #include "utils/utils.cpp"
 #include "class/client.cpp"
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 
 int main(int argc, char * argv[])
 {

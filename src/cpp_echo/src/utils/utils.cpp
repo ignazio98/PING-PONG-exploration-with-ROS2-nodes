@@ -66,7 +66,6 @@ std::string concatenete_result( int publisher_,
 	 * Return:
 	 * 		string contained all the parameter
 	*/
-	std::string result_ = 
 	
 	return "client" + std::to_string(publisher_) + "-"
 			+ std::to_string(publisher_max_) + "-"
