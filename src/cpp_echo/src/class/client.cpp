@@ -2,6 +2,14 @@ class Client : public rclcpp::Node{
 public:
   Client() : Node("client"), count_(0)
   { 
+	/***
+	 * define Client Node
+	 * 
+	 * Args:
+	 * 		number_publisher ([int]): number of current client
+	 * 		publisher_max ([int]): total number of client
+	 * 		message_size ([int]): size of a single messagge
+	*/
 	//declare parameter
 	this->declare_parameter("message_size",rclcpp::PARAMETER_INTEGER);
 	this->declare_parameter("number_publisher",rclcpp::PARAMETER_INTEGER);
@@ -34,7 +42,11 @@ public:
 private:
   void timer_callback()
   {
-	//message creation
+	/***
+	 * function to create and send message each 500ms 
+	*/
+
+	//declare parameter
 	auto m = std_msgs::msg::String();
 	std::string message;
 	message.append(this->get_parameter("message_size").as_int(), 'c');
@@ -67,7 +79,13 @@ private:
 
   void topic_callback(const std_msgs::msg::String::SharedPtr msg)
   {
-	//we have receive a response from the server
+	/***
+	 * read response from server
+	 * 
+	 * Args:
+	 * 		msg ([std_msgs]): message rom server node
+	*/
+	//declare parameter
 	//we get the time
     rcl_time_point_value_t end_ns = clk_->now().nanoseconds();
     

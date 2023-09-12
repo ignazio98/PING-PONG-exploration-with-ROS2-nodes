@@ -13,7 +13,6 @@ def average_chart(df):
     Args:
         df ([dataframe]): [dataframe created from make_average_chart function]
     """
-
     ax1 = df.pivot("Message Size", "Scrittori").plot.bar(figsize = (12, 6))
     plt.savefig("avg-compare-lan-local.pdf", format="pdf", bbox_inches="tight")
     ax2 = df[['Scrittori', 'Message Size', 'LAN']].pivot("Message Size", "Scrittori").plot.bar(figsize = (12, 6))
