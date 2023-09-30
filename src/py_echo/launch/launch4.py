@@ -1,17 +1,10 @@
 from launch_ros.actions import Node
-
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
-from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration, PythonExpression, TextSubstitution
-from launch.launch_context import LaunchContext
-import sys
+from launch.substitutions import LaunchConfiguration, TextSubstitution
 
 def generate_launch_description():
 	ld = LaunchDescription()
-	
-	context = LaunchContext()
-	
+
 	message_size_ = LaunchConfiguration("message_size")
 	publisher_max_ = LaunchConfiguration("publisher_max")
     
