@@ -23,8 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
             'console_scripts': [
-                    'talker = py_echo.publisher_member_function:main',
-                    'listener = py_echo.subscriber_member_function:main',
+                    'client = py_echo.publisher_member_function:main',
+                    'server = py_echo.subscriber_member_function:main',
             ],
     },
     
