@@ -15,14 +15,15 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-#add_executable(client src/client_member_function.cpp)
-#ament_target_dependencies(client rclcpp std_msgs)
+add_executable(client src/client_member_function.cpp)
+ament_target_dependencies(client rclcpp std_msgs)
 
-#add_executable(server src/server_member_function.cpp)
-#ament_target_dependencies(server rclcpp std_msgs)
+add_executable(server src/server_member_function.cpp)
+ament_target_dependencies(server rclcpp std_msgs)
 
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME})
+install(TARGETS
+  client
+  server
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
