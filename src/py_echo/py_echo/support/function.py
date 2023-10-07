@@ -1,3 +1,4 @@
+import os
 
 class Utils:
     def save_to_file(filename_, data_):
@@ -14,7 +15,7 @@ class Utils:
         """
 
         try:
-            f = open("result/" + filename_, "a")
+            f = open("result/data/" + filename_, "a")
         except OSError:
             return 1
 

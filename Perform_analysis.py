@@ -197,13 +197,15 @@ def main():
     scrittori_unique = dfall['Scrittori'].unique().tolist()
     message_unique = dfall['Message Size'].unique().tolist()
 
-    #LAN
+    #LAN Settings
     size = 50
     columns = 4
     
+    #average chart
     avg_dataframe = make_average_chart(dfall, scrittori_unique, message_unique)
     average_chart(avg_dataframe)
 
+    # R chart for LAN settings
     Rlan = copy.deepcopy(table_creation(dflan, scrittori_unique, message_unique, source_unique, size))
     make_r_chart_by_writer(Rlan, scrittori_unique, message_unique, columns, lan)
     make_r_chart_by_size(Rlan, scrittori_unique, message_unique, 2, lan)
@@ -212,6 +214,7 @@ def main():
     size = 100
     columns = 5
     
+    # R chart for LOCAL settings
     Rlocal = copy.deepcopy(table_creation(dflocal, scrittori_unique, message_unique, source_unique, size))
     make_r_chart_by_writer(Rlocal, scrittori_unique, message_unique, columns, local)
     make_r_chart_by_size(Rlocal, scrittori_unique, message_unique, 2, local)

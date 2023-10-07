@@ -12,7 +12,7 @@ def generate_launch_description():
 		ld.add_action(
 			Node(
 				package="py_echo",
-				executable="talker",
+				executable="client",
 				name="Node" + str(i),
 				parameters=[
 					{"message_size" : message_size_},

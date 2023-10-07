@@ -1,6 +1,8 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+#include <sys/stat.h>
 
 char intToAlphabet( int i )
 {
@@ -31,13 +33,13 @@ int save_to_file(std::string filename_,
 	 * 		1 is file can't be open
 	*/
 	
-	std::ofstream writer("result/" + filename_, std::ios::app);
+	std::ofstream writer("result/data/" + filename_, std::ios::app);
 
 	//check if we can write on it
 	if (!writer)
 	{
 		std::cout << "There was an error opening file for output" << std::endl;
-		return -1;
+		return 2;
 	}
 
 	//write and close
