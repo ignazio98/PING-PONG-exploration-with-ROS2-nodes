@@ -190,7 +190,7 @@ def table_creation(df, writer, size, source, n_element):
                 elif len(t['Time']) == 0:
                     refill = [0] * (n_element - len(t['Time']))
                 elif len(t['Time']) > n_element:
-                    t['Time'] = t['Time'].iloc[0:n_element]
+                    t = t.head(n_element)
 
                 tmp['client' + str(k)] = np.concatenate((np.array(t['Time']), refill))
 
