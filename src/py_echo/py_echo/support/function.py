@@ -25,7 +25,7 @@ class Utils:
         f.close()
         return 0
 
-    def concatenate_result(publisher_, publisher_max_, message_size_, time_):
+    def concatenate_result(publisher_, publisher_max_, message_size_, time_, provenance_):
         """
         /***
         Create the result string 
@@ -40,4 +40,4 @@ class Utils:
         	([String]) string contained all the parameter
         
         """						
-        return "client" + str(publisher_) + "-" + str(publisher_max_) + "-" + str(message_size_) + "-" + str(time_)
+        return "client" + str(publisher_) + "-" + str(publisher_max_) + "-" + str(message_size_) + "-" + str(time_) + "-" + provenance_

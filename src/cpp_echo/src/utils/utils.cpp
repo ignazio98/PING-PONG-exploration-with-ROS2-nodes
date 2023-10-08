@@ -53,7 +53,8 @@ std::string concatenete_result( int publisher_,
 								int publisher_max_, 
 								int message_size_, 
 								int end_, 
-								int start_)
+								int start_,
+								std::string provenance)
 {
 	/***
 	 * create the result string 
@@ -72,8 +73,8 @@ std::string concatenete_result( int publisher_,
 	return "client" + std::to_string(publisher_) + "-"
 			+ std::to_string(publisher_max_) + "-"
 			+ std::to_string(message_size_) + "-"
-			+ std::to_string(end_ - start_);
+			+ std::to_string(end_ - start_) + "-"
+			+ provenance;
 }
-
 
 

@@ -15,6 +15,7 @@ public:
 	this->declare_parameter("message_size",rclcpp::PARAMETER_INTEGER);
 	this->declare_parameter("number_publisher",rclcpp::PARAMETER_INTEGER);
 	this->declare_parameter("publisher_max",rclcpp::PARAMETER_INTEGER);
+	this->declare_parameter("test",rclcpp::PARAMETER_STRING);
 
 	//convert the local number_publisher to char
 	std::string lettera(1, intToAlphabet(this->get_parameter("number_publisher").as_int()+1));
@@ -38,6 +39,10 @@ public:
 		500ms, std::bind(&Client::timer_callback, this));
 
 	filename_ = "result-" + this->get_parameter("publisher_max").value_to_string() + "-" + this->get_parameter("message_size").value_to_string() + ".txt";
+	if(this->get_parameter("test").value_to_string() == "LAN")
+	{
+		NUM_MESSAGES = 50;
+	}
 
 	//ceare pub and sub
 	publisher_ = this->create_publisher<std_msgs::msg::String>(topic_name, 10);
@@ -78,7 +83,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
   size_t count_, arrived_;
-  const size_t NUM_MESSAGES = 50;
+  size_t NUM_MESSAGES = 100;
   std::string filename_;
   
   rclcpp::Clock *clk_;
@@ -107,7 +112,8 @@ private:
 	int np = this->get_parameter("number_publisher").as_int();
 	int pm = this->get_parameter("publisher_max").as_int();
 	int ms = this->get_parameter("message_size").as_int();
-	std::string result_ = concatenete_result(np, pm, ms,  end_ns,  start_ns_[arrived_]);
+	std::string provenance = this->get_parameter("test").as_string();
+	std::string result_ = concatenete_result(np, pm, ms,  end_ns,  start_ns_[arrived_], provenance);
     
     //save to file
     if(save_to_file(filename_, result_) != 0)
@@ -126,4 +132,3 @@ private:
 	}
   }	
 };
-

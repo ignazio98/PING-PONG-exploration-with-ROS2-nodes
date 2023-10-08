@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
-def average_chart(df):
+def average_chart(df, local, lan):
     """
         Create 3 plot:
         First compare average Time in ms, between local and lan
@@ -12,13 +12,22 @@ def average_chart(df):
         Third create a plot to compare average Time for only LOCAL
     Args:
         df ([dataframe]): [dataframe created from make_average_chart function]
+        local ([bool]): [local is empty or not]
+        lan ([bool]): [lan is empty or not]
     """
+    df['LAN'] = df['LAN'].fillna(0)
+    df['LOCAL'] = df['LOCAL'].fillna(0)
+    
     ax1 = df.pivot_table(index="Message Size", columns="Scrittori").plot.bar(figsize = (12, 6))
-    plt.savefig("result/avg-compare-lan-local.pdf", format="pdf", bbox_inches="tight")
-    ax2 = df[['Scrittori', 'Message Size', 'LAN']].pivot_table(index="Message Size", columns="Scrittori", values="LAN").plot.bar(figsize = (12, 6))
-    plt.savefig("result/avg-lan.pdf", format="pdf", bbox_inches="tight")
-    ax3 = df[['Scrittori', 'Message Size', 'LOCAL']].pivot_table(index="Message Size", columns="Scrittori", values="LOCAL").plot.bar(figsize = (12, 6))
-    plt.savefig("result/avg-local.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig("result/plot/avg-compare-lan-local.pdf", format="pdf", bbox_inches="tight")
+    
+    if not local:
+        ax2 = df[['Scrittori', 'Message Size', 'LAN']].pivot_table(index="Message Size", columns="Scrittori", values="LAN").plot.bar(figsize = (12, 6))
+        plt.savefig("result/plot/avg-lan.pdf", format="pdf", bbox_inches="tight")
+    
+    if not lan:
+        ax3 = df[['Scrittori', 'Message Size', 'LOCAL']].pivot_table(index="Message Size", columns="Scrittori", values="LOCAL").plot.bar(figsize = (12, 6))
+        plt.savefig("result/plot/avg-local.pdf", format="pdf", bbox_inches="tight")
 
 def make_average_chart(df, writer, size):
     """
@@ -106,12 +115,12 @@ def make_r_chart_by_writer(df, writer, size, columns, provenance):
 
         axis[j//columns,j%columns].legend()
         axis[j//columns,j%columns].grid()
-        axis[j//columns,j%columns].set_title('Size_' + str(size[i]))
+        axis[j//columns,j%columns].set_title('Size_' + str(size[j]))
 
     for ax in axis.flat:
         ax.set(xlabel='Request', ylabel='Time ms')
         
-    plt.savefig(f"result/result-{provenance}-writer.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig(f"result/plot/result-{provenance}-writer.pdf", format="pdf", bbox_inches="tight")
 
 def make_r_chart_by_size(df, writer, size, columns, provenance):
     """
@@ -149,7 +158,7 @@ def make_r_chart_by_size(df, writer, size, columns, provenance):
     for ax in axis.flat:
         ax.set(xlabel='Request', ylabel='Time ms')
 
-    plt.savefig(f"result/result-{provenance}-message-size.pdf", format="pdf", bbox_inches="tight")
+    plt.savefig(f"result/plot/result-{provenance}-message-size.pdf", format="pdf", bbox_inches="tight")
 
 def table_creation(df, writer, size, source, n_element):
     """
@@ -176,19 +185,46 @@ def table_creation(df, writer, size, source, n_element):
                 t = data[data['Source'] == source[k]]
 
                 refill = []
-                if len(t['Time']) < n_element:
-                    refill = [t['Time'].iloc[-1]] * (n_element - len(t['Time']))
+                if len(t['Time']) < n_element and len(t['Time']) > 0:
+                    refill = [t['Time'].iloc[0]] * (n_element - len(t['Time']))
+                elif len(t['Time']) == 0:
+                    refill = [0] * (n_element - len(t['Time']))
+                elif len(t['Time']) > n_element:
+                    t['Time'] = t['Time'].iloc[0:n_element]
 
                 tmp['client' + str(k)] = np.concatenate((np.array(t['Time']), refill))
 
             ris = pd.concat([ris, tmp])
     return ris.fillna(0)
+    
+def check_structure(df, columns):
+    """
+    Split the data inside the DATI.csv file into multiple columns 
+
+    Args:
+        df ([dataframe]): [dataframe read from file]
+        column ([int]): [number of column of df]
+
+    Returns:
+        [dataframe]: [dataframe splited]
+    """
+    header = ['Source', 'Scrittori', 'Message Size', 'Time', 'Provenance']
+    ris_ = pd.DataFrame()
+    if columns == 1:
+        #I have only 1 column, i need to split
+        ris_ = df.iloc[:, 0].str.split('-', expand=True)
+        ris_.columns = header
+    
+    ris_[['Scrittori', 'Message Size','Time']] = ris_[['Scrittori', 'Message Size','Time']].astype('int64')
+    return ris_
 
 def main():
     #open dataset
     lan = "LAN"
     local = "LOCAL"
     df = pd.read_csv('result/DATI.csv', sep=";", header=0)
+    
+    df = check_structure(df, df.shape[1])
     dfall = copy.deepcopy(df)
     dflan = copy.deepcopy(df[df['Provenance'] == lan])
     dflocal = copy.deepcopy(df[df['Provenance'] == local])
@@ -199,28 +235,28 @@ def main():
     message_unique_lan = dflan['Message Size'].unique().tolist()
     message_unique_local = dflocal['Message Size'].unique().tolist()
 
-    #LAN Settings
-    size = 50
-    columns = 4
-    
     #average chart
     avg_dataframe = make_average_chart(dfall, scrittori_unique, message_unique_local)
-    average_chart(avg_dataframe)
-
-    # R chart for LAN settings
-    Rlan = copy.deepcopy(table_creation(dflan, scrittori_unique, message_unique_lan, source_unique, size))
-    make_r_chart_by_writer(Rlan, scrittori_unique, message_unique_lan, columns, lan)
-    make_r_chart_by_size(Rlan, scrittori_unique, message_unique_lan, 2, lan)
-
-    #LOCAL
-    size = 100
-    columns = 5
+    average_chart(avg_dataframe, dflocal.empty, dflan.empty)
     
-    # R chart for LOCAL settings
-    Rlocal = copy.deepcopy(table_creation(dflocal, scrittori_unique, message_unique_local, source_unique, size))
-    
-    make_r_chart_by_writer(Rlocal, scrittori_unique, message_unique_local, columns, local)
-    make_r_chart_by_size(Rlocal, scrittori_unique, message_unique_local, 2, local)
+    if not dflan.empty:
+    	# R chart for LAN settings
+        #LAN Settings
+        size = 50
+        columns = 4
+        Rlan = copy.deepcopy(table_creation(dflan, scrittori_unique, message_unique_lan, source_unique, size))
+        make_r_chart_by_writer(Rlan, scrittori_unique, message_unique_lan, columns, lan)
+        make_r_chart_by_size(Rlan, scrittori_unique, message_unique_lan, 2, lan)
+
+    if not dflocal.empty:
+    	# R chart for LOCAL settings
+    	#LOCAL
+        size = 100
+        columns = 5
+
+        Rlocal = copy.deepcopy(table_creation(dflocal, scrittori_unique, message_unique_local, source_unique, size))
+        make_r_chart_by_writer(Rlocal, scrittori_unique, message_unique_local, columns, local)
+        make_r_chart_by_size(Rlocal, scrittori_unique, message_unique_local, 2, local)
  
     return 
 
