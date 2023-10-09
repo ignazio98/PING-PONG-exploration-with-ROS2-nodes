@@ -2,7 +2,6 @@ class Client : public rclcpp::Node{
 public:
   Client() : Node("client"), count_(0)
   { 
-
 	/***
 	 * define Client Node
 	 * 
@@ -38,16 +37,11 @@ public:
 	timer_ = this->create_wall_timer(
 		500ms, std::bind(&Client::timer_callback, this));
 
-	filename_ = "result-" + this->get_parameter("publisher_max").value_to_string() + "-" + this->get_parameter("message_size").value_to_string() + ".txt";
 	if(this->get_parameter("test").value_to_string() == "LAN")
 	{
 		NUM_MESSAGES = 50;
 	}
 
-	//ceare pub and sub
-	publisher_ = this->create_publisher<std_msgs::msg::String>(topic_name, 10);
-	subscription_ = this->create_subscription<std_msgs::msg::String>(echo_name, 10, std::bind(&Client::topic_callback, this, _1));
-	timer_ = this->create_wall_timer(500ms, std::bind(&Client::timer_callback, this));
 	clk_ = new rclcpp::Clock();
   }
 
